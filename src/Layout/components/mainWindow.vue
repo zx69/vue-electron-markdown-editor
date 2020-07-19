@@ -6,7 +6,14 @@
     >Markdown Content</label>
     <textarea
       class="view__markdown"
+      :class="{
+        'drag-over': dragOverStatus === 'success',
+        'drag-error': dragOverStatus === 'error',
+      }"
       v-model="rawMarkdownText"
+      @dragover="handleDragOver"
+      @dragleave="handleDragLeave"
+      @drop="handleDrop"
     ></textarea>
     <div
       class="view__html"
@@ -19,6 +26,10 @@
 import marked from 'marked';
 import { ipcRenderer } from 'electron';
 
+const getDraggedFile = (e) => e.dataTransfer.items[0];
+const getDroppedFile = (e) => e.dataTransfer.files[0];
+const isFileTypeSupported = (file) => ['text/plain', 'text/markdown', ''].includes(file.type);
+
 export default {
   props: {
     originalContent: {
@@ -30,6 +41,7 @@ export default {
     return {
       rawMarkdownText: this.originalContent,
       renderedHtml: '',
+      dragOverStatus: null,
     };
   },
   mounted() {
@@ -45,6 +57,21 @@ export default {
     },
     renderMarkdownToHtml() {
       this.renderedHtml = marked(this.rawMarkdownText);
+    },
+    handleDragOver(e) {
+      const file = getDraggedFile(e);
+      this.dragOverStatus = isFileTypeSupported(file) ? 'success' : 'error';
+    },
+    handleDragLeave() {
+      this.dragOverStatus = null;
+    },
+    handleDrop(e) {
+      const file = getDroppedFile(e);
+      if (isFileTypeSupported(file)) {
+        this.$emit('handleOpenFile', file.path);
+      } else {
+        alert('That file type is not supported!');
+      }
     },
   },
   watch: {

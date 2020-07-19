@@ -21,15 +21,18 @@ export default class WindowManager {
   }
 
   listenToOpenFile() {
-    ipcMain.on('open-file', (e) => {
+    ipcMain.on('open-file', (e, file) => {
       const currentWindow = this.getCurrentWindow(e.sender);
+      if (file) {
+        this.handleOpenFile(currentWindow, file);
+        return;
+      }
       const fileList = getFilePathByOpen(currentWindow);
       if (!fileList || fileList.length === 0) {
         return;
       }
-      const file = fileList[0];
-      const content = this.handleOpenFile(currentWindow, file);
-      e.reply('file-opened', file, content);
+      const selectedFile = fileList[0];
+      this.handleOpenFile(currentWindow, selectedFile);
     });
   }
 
@@ -60,7 +63,7 @@ export default class WindowManager {
   handleOpenFile(currentWindow, file) {
     const content = readFile(file);
     this.saveFileRecordToSystem(currentWindow, file);
-    return content;
+    currentWindow.webContents.send('file-opened', file, content);
   }
 
   saveFileRecordToSystem(currentWindow, file) {

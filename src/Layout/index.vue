@@ -3,7 +3,7 @@
     <ControlBar
       :isEdited="isEdited"
       @handleCreateWindow="handleCreateWindow"
-      @handleOpenFile="handleOpenFile"
+      @handleOpenFile="handleOpenFile()"
       @handleSaveHtml="handleSaveHtml"
       @handleSaveMarkdown="handleSaveMarkdown"
       @handleRevertingFile="handleRevertingFile"
@@ -12,6 +12,7 @@
       ref="main-window"
       :originalContent="originalContent"
       @updateUserInterface="updateUserInterface"
+      @handleOpenFile="handleOpenFile"
     ></mainWindow>
   </div>
 </template>
@@ -47,7 +48,6 @@ export default {
       ipcRenderer.on('file-opened', (e, file, content) => {
         this.filePath = file;
         this.originalContent = content;
-        console.log('here');
         this.updateUserInterface(false);
       });
     },
@@ -71,8 +71,8 @@ export default {
     handleCreateWindow() {
       ipcRenderer.send('create-window');
     },
-    handleOpenFile() {
-      ipcRenderer.send('open-file');
+    handleOpenFile(file) {
+      ipcRenderer.send('open-file', file);
     },
     handleSaveHtml() {
       ipcRenderer.send('save-html', this.$refs['main-window'].renderedHtml);

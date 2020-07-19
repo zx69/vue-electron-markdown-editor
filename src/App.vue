@@ -1,5 +1,10 @@
 <template>
-  <div id="app">
+  <div id="app"
+    @dragstart.prevent
+    @dragover.prevent
+    @dragleave.prevent
+    @drop.prevent
+  >
     <Layout></Layout>
   </div>
 </template>
