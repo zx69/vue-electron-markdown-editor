@@ -6,6 +6,7 @@
       @handleOpenFile="handleOpenFile"
       @handleSaveHtml="handleSaveHtml"
       @handleSaveMarkdown="handleSaveMarkdown"
+      @handleRevertingFile="handleRevertingFile"
     ></ControlBar>
     <mainWindow
       ref="main-window"
@@ -17,10 +18,11 @@
 
 <script>
 import path from 'path';
-import remote, { ipcRenderer } from 'electron';
+import { remote, ipcRenderer } from 'electron';
 import ControlBar from './components/ControlBar.vue';
 import mainWindow from './components/mainWindow.vue';
 
+console.log(remote);
 const currentWindow = remote.getCurrentWindow();
 
 export default {
@@ -30,21 +32,22 @@ export default {
   },
   data() {
     return {
-      windowTitle: null,
-      filePath: null,
-      originalContent: null,
+      windowTitle: '',
+      filePath: '',
+      originalContent: '',
       isEdited: false,
     };
   },
   mounted() {
-    this.initFileOpenListener();
+    this.listenToFileOpened();
+    // this.listenToFileSaved();
   },
   methods: {
-    initFileOpenListener() {
+    listenToFileOpened() {
       ipcRenderer.on('file-opened', (e, file, content) => {
         this.filePath = file;
         this.originalContent = content;
-
+        console.log('here');
         this.updateUserInterface(false);
       });
     },
@@ -80,6 +83,10 @@ export default {
         this.filePath,
         this.$refs['main-window'].rawMarkdownText,
       );
+    },
+    handleRevertingFile() {
+      console.log('here');
+      this.$refs['main-window'].rawMarkdownText = this.originalContent;
     },
 
   },

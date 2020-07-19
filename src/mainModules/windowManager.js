@@ -23,7 +23,6 @@ export default class WindowManager {
   listenToOpenFile() {
     ipcMain.on('open-file', (e) => {
       const currentWindow = this.getCurrentWindow(e.sender);
-      this.currentWindow = currentWindow;
       const fileList = getFilePathByOpen(currentWindow);
       if (!fileList || fileList.length === 0) {
         return;
@@ -37,7 +36,6 @@ export default class WindowManager {
   listenToSaveHtml() {
     ipcMain.on('save-html', (e, content) => {
       const currentWindow = this.getCurrentWindow(e.sender);
-      this.currentWindow = currentWindow;
       showSaveDialog(currentWindow, false, content, 'html');
     });
   }
@@ -45,9 +43,9 @@ export default class WindowManager {
   listenToSaveMarkdown() {
     ipcMain.on('save-markdown', (e, file, content) => {
       const currentWindow = this.getCurrentWindow(e.sender);
-      this.currentWindow = currentWindow;
       showSaveDialog(currentWindow, file, content, 'markdown').then(() => {
-        this.saveFileRecordToSystem(file);
+        this.saveFileRecordToSystem(currentWindow, file);
+        e.reply('file-opened', file, content);
       });
     });
   }
@@ -61,12 +59,12 @@ export default class WindowManager {
 
   handleOpenFile(currentWindow, file) {
     const content = readFile(file);
-    this.saveFileRecordToSystem(file);
+    this.saveFileRecordToSystem(currentWindow, file);
     return content;
   }
 
-  saveFileRecordToSystem(file) {
+  saveFileRecordToSystem(currentWindow, file) {
     app.addRecentDocument(file);
-    this.currentWindow.setResponsedFilename(file);
+    currentWindow.setRepresentedFilename(file);
   }
 }

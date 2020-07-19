@@ -2,8 +2,8 @@
   <header class="control-bar">
     <button @click="handleCreateWindow">新建</button>
     <button @click="handleOpenFile">打开</button>
-    <button @click="saveMarkdown" :disabeld="!isEdited">保存</button>
-    <button :disabeld="!isEdited">回退</button>
+    <button @click="handleSaveMarkdown" :disabeld="!isEdited">保存</button>
+    <button @click="handleRevertingFile" :disabeld="!isEdited">回退</button>
     <button @click="handleSaveHtml">保存为HTML</button>
     <button>显示文件</button>
     <button>默认程序打开</button>
@@ -56,6 +56,9 @@ export default {
     },
     handleSaveMarkdown() {
       this.$emit('handleSaveMarkdown');
+    },
+    handleRevertingFile() {
+      this.$emit('handleRevertingFile');
     },
   },
 };

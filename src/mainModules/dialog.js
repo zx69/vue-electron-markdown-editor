@@ -12,16 +12,16 @@ export const getFilePathByOpen = (targetWindow) => {
 };
 
 export const showSaveDialog = (targetWindow, file, content, type) => {
-  let savePath = '';
+  let savePath = file;
   return new Promise((resolve, reject) => {
     // file is undefined/false means a new files
-    if (!file) {
+    if (!savePath) {
       savePath = dialog.showSaveDialogSync(targetWindow, {
         title: 'Save HTML',
         defaultPath: app.getPath('documents'),
         filters: [
           type === 'html'
-            ? { name: 'HTML Files', extensions: ['html, htm'] }
+            ? { name: 'HTML Files', extensions: ['html', 'htm'] }
             : { name: 'Markdown File', extensions: ['md', 'markdown'] },
         ],
       });
