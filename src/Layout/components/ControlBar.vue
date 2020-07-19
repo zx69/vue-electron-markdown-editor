@@ -2,22 +2,32 @@
   <header class="control-bar">
     <button @click="handleCreateWindow">新建</button>
     <button @click="handleOpenFile">打开</button>
-    <button>保存</button>
-    <button>回退</button>
-    <button>保存为HTML</button>
+    <button @click="saveMarkdown" :disabeld="!isEdited">保存</button>
+    <button :disabeld="!isEdited">回退</button>
+    <button @click="handleSaveHtml">保存为HTML</button>
     <button>显示文件</button>
     <button>默认程序打开</button>
   </header>
 </template>
 
 <script>
-import { ipcRenderer } from 'electron';
 
 // const currentWindow = remote.getCurrentWindow();
 // console.log(remote.getFilePathByOpen);
 // const mainProcess = remote.require('./background');
 
 export default {
+  props: {
+    isEdited: {
+      type: Boolean,
+      default: false,
+    },
+  },
+  // data() {
+  //   return {
+
+  //   };
+  // },
   computed: {
     // currentWindow() {
     //   return remote.getCurrentWindow();
@@ -36,11 +46,16 @@ export default {
     //   });
     // },
     handleCreateWindow() {
-      ipcRenderer.send('create-window');
+      this.$emit('handleCreateWindow');
     },
     handleOpenFile() {
-      console.log('handleOpenFile');
-      ipcRenderer.send('open-file');
+      this.$emit('handleOpenFile');
+    },
+    handleSaveHtml() {
+      this.$emit('handleSaveHtml');
+    },
+    handleSaveMarkdown() {
+      this.$emit('handleSaveMarkdown');
     },
   },
 };

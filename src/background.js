@@ -1,7 +1,7 @@
 import {
-  app, protocol, BrowserWindow, Menu,
+  app, protocol,
 } from 'electron';
-import { createProtocol } from 'vue-cli-plugin-electron-builder/lib';
+// import { createProtocol } from 'vue-cli-plugin-electron-builder/lib';
 import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer';
 import { createWindow } from './mainModules/window';
 import WindowManager from './mainModules/windowManager';
@@ -51,6 +51,15 @@ app.on('ready', async () => {
   }
   createWindow();
   windowManager.initIpcMain();
+});
+
+app.on('will-finish-launching', () => {
+  app.on('open-file', (e, file) => {
+    const newWin = createWindow();
+    newWin.once('ready-to-show', () => {
+      windowManager.handleOpenFile(newWin, file);
+    });
+  });
 });
 
 // Exit cleanly on request from parent process in development mode.

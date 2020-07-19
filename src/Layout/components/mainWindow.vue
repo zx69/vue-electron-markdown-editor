@@ -20,18 +20,26 @@ import marked from 'marked';
 import { ipcRenderer } from 'electron';
 
 export default {
+  props: {
+    originalContent: {
+      type: [String, Number],
+      default: '',
+    },
+  },
   data() {
     return {
-      rawMarkdownText: '',
+      rawMarkdownText: this.originalContent,
       renderedHtml: '',
     };
   },
   mounted() {
-    this.initFileOpenListener();
+    // this.initFileOpenListener();
   },
   methods: {
     initFileOpenListener() {
       ipcRenderer.on('file-opened', (e, file, content) => {
+        // this.filePath = file;
+        // this.originalContent = content;
         this.rawMarkdownText = content;
       });
     },
@@ -40,8 +48,12 @@ export default {
     },
   },
   watch: {
+    originalContent(val) {
+      this.rawMarkdownText = val;
+    },
     rawMarkdownText(val) {
       this.renderMarkdownToHtml(val);
+      this.$emit('updateUserInterface', val !== this.originalContent);
     },
   },
 
