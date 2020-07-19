@@ -1,16 +1,11 @@
 import { dialog } from 'electron';
 
-exports.getFilePathByOpen = (targetWindow) => {
+export const getFilePathByOpen = (targetWindow) => {
   const selectedFile = dialog.showOpenDialogSync(targetWindow, {
     properties: ['openFile'],
     filters: [
-      { name: 'Text Files', extensions: ['txt'] },
-      { name: 'Markdown Files', extensions: ['md', 'markdown'] },
+      { name: 'Files', extensions: ['md', 'markdown', 'txt'] },
     ],
   });
-
-  if (!selectedFile) {
-    return;
-  }
-  console.log(selectedFile);
+  return selectedFile;
 };

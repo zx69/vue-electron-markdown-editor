@@ -1,6 +1,6 @@
 <template>
   <header class="control-bar">
-    <button>新建</button>
+    <button @click="handleCreateWindow">新建</button>
     <button @click="handleOpenFile">打开</button>
     <button>保存</button>
     <button>回退</button>
@@ -11,24 +11,36 @@
 </template>
 
 <script>
-import { remote } from 'electron';
+import { ipcRenderer } from 'electron';
 
+// const currentWindow = remote.getCurrentWindow();
 // console.log(remote.getFilePathByOpen);
 // const mainProcess = remote.require('./background');
 
 export default {
   computed: {
-    currentWindow() {
-      return remote.getCurrentWindow();
-    },
+    // currentWindow() {
+    //   return remote.getCurrentWindow();
+    // },
     // mainProcess() {
     //   return remote.require('../../background.js');
     // },
   },
+  mounted() {
+    // this.initFileOpenListener();
+  },
   methods: {
+    // initFileOpenListener() {
+    //   ipcRenderer.on('file-opened', (e, file, content) => {
+    //     console.log(file, content);
+    //   });
+    // },
+    handleCreateWindow() {
+      ipcRenderer.send('create-window');
+    },
     handleOpenFile() {
-      // console.log(mainProcess);
-      // this.$electron.ipcRenderer.sendSync('get-file-path', this.currentWindow);
+      console.log('handleOpenFile');
+      ipcRenderer.send('open-file');
     },
   },
 };

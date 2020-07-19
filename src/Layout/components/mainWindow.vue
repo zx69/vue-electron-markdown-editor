@@ -17,6 +17,7 @@
 
 <script>
 import marked from 'marked';
+import { ipcRenderer } from 'electron';
 
 export default {
   data() {
@@ -25,7 +26,15 @@ export default {
       renderedHtml: '',
     };
   },
+  mounted() {
+    this.initFileOpenListener();
+  },
   methods: {
+    initFileOpenListener() {
+      ipcRenderer.on('file-opened', (e, file, content) => {
+        this.rawMarkdownText = content;
+      });
+    },
     renderMarkdownToHtml() {
       this.renderedHtml = marked(this.rawMarkdownText);
     },
