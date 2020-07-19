@@ -1,0 +1,32 @@
+/*选择一个更新的CSS框模型，它将正确地设置元素的宽度和高度*/
+html {
+  box-sizing: border-box;
+}
+
+/* 将此设置传递给页面上的所有其他元素和伪元素*/
+*, *:before, *:after {
+  box-sizing: inherit;
+}
+
+html, body {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  position: absolute;
+}
+
+/* 在整个应用程序中使用操作系统的默认字体 */
+body, input {
+  font: menu;
+}
+
+/*移除浏览器围绕活动输入字段的默认突出显示*/
+textarea, input, div, button {
+  outline: none;
+  margin: 0;
+}
