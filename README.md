@@ -43,3 +43,16 @@ Electron构建的应用会在 C:\Users\{username}\AppData\Roaming{appName}\exten
 复制已经解压好的扩展文件, 直接复制到我们自己的项目缓存扩展文件的文件夹extensions下（上文有提到）.之后重启应用就可以了.
 ```
 自己试了几次, 使用这种方法还是没办法安装devtools插件,但至少不会再有上面的等等时间.
+
+4. 《Electron In action》书中的一个错误：可能作者使用macOS开发,导致忽略了windows的适配情况。如判断文件是否被修改，书中采用`win.isDocumentEdited()`进行判断。然而该方法为macOS专有，windows、linux中无效。issue中作者也明确回复windows中没有相关API, 判断是否修改需自行定义。为保证各系统兼容,故自行在window对象中定义属性，并在新建窗口时调用：
+```
+const defineDocumentEdited = (targetWindow) => {
+  Object.defineProperty(targetWindow, 'documentEdited', {
+    value: false,
+    configurable: false, 
+    enumerable: true,
+    writable: true,
+  });
+};
+```
+
