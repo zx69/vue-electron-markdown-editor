@@ -28,6 +28,8 @@ export const createMenu = () => {
   }
 };
 
+// documentEdited: 记录文件是否修改，在renderer中赋值， 用于windows
+// macOs有默认的isDocumentEdited值获取文件变化（Boolean）,但windoww没有，故在win下挂载变量以记录
 const defineDocumentEdited = (targetWindow) => {
   Object.defineProperty(targetWindow, 'documentEdited', {
     value: false,
@@ -36,6 +38,7 @@ const defineDocumentEdited = (targetWindow) => {
     writable: true,
   });
 };
+
 export default class WindowManager {
   constructor() {
     this.windows = new Set();
@@ -46,10 +49,17 @@ export default class WindowManager {
     this.openFiles = new Map();
   }
 
+  // 根据webContents获取窗口对象
   getCurrentWindow(sender) {
     return BrowserWindow.fromWebContents(sender);
   }
 
+  isDocumentEdited(targetWindow) {
+    // macOs || windows
+    return (targetWindow.isDocumentEdited() || targetWindow.documentEdited);
+  }
+
+  // 初始化监听
   initIpcMain() {
     this.listenToOpenFile();
     this.listenToCreateWindow();
@@ -57,6 +67,7 @@ export default class WindowManager {
     this.listenToSaveMarkdown();
   }
 
+  // 创建新窗口
   createWindow() {
     let x = 0;
     let y = 0;
@@ -98,7 +109,7 @@ export default class WindowManager {
     });
 
     win.on('close', (e) => {
-      if (win.isDocumentEdited() || win.documentEdited) {
+      if (this.isDocumentEdited(win)) {
         e.preventDefault();
 
         const result = showMessageBox({
@@ -170,9 +181,24 @@ export default class WindowManager {
   handleOpenFile(currentWindow, file) {
     const content = readFile(file);
     this.saveFileRecordToSystem(currentWindow, file);
-    currentWindow.webContents.send('file-opened', file, content);
+    if (this.isDocumentEdited(currentWindow)) {
+      const result = showMessageBox({
+        win: currentWindow,
+        title: 'Overwrite Current Unsaved Changes?',
+        message: 'Opening a new file in this window will overwrite your unsaved changes. Open this file anyway?',
+        buttonsArr: [
+          'Yes',
+          'Cancel',
+        ],
+      });
+      if (result === 1) {
+        return;
+      }
+      currentWindow.webContents.send('file-opened', file, content);
+    }
   }
 
+  // 保存文件打开记录, 用于macOS
   saveFileRecordToSystem(currentWindow, file) {
     app.addRecentDocument(file);
     currentWindow.setRepresentedFilename(file);
@@ -183,8 +209,22 @@ export default class WindowManager {
 
     const watcher = fs.watch(file, (eventType) => {
       if (eventType === 'change') {
-        const content = readFile(file);
-        targetWindow.webContents.send('file-opened', file, content);
+        if (this.isDocumentEdited(targetWindow)) {
+          const result = showMessageBox({
+            win: targetWindow,
+            title: 'Overwrite Current Unsaved Changes?',
+            message: 'Another application has changed this file. Load changes?',
+            buttonsArr: [
+              'Yes',
+              'Cancel',
+            ],
+          });
+          if (result === 1) {
+            return;
+          }
+          const content = readFile(file);
+          targetWindow.webContents.send('file-opened', file, content);
+        }
       }
     });
     this.openedFiles.set(targetWindow, watcher);

@@ -24,7 +24,6 @@
 
 <script>
 import marked from 'marked';
-import { ipcRenderer } from 'electron';
 
 const getDraggedFile = (e) => e.dataTransfer.items[0];
 const getDroppedFile = (e) => e.dataTransfer.files[0];
@@ -48,13 +47,13 @@ export default {
     // this.initFileOpenListener();
   },
   methods: {
-    initFileOpenListener() {
-      ipcRenderer.on('file-opened', (e, file, content) => {
-        // this.filePath = file;
-        // this.originalContent = content;
-        this.rawMarkdownText = content;
-      });
-    },
+    // initFileOpenListener() {
+    //   ipcRenderer.on('file-opened', (e, file, content) => {
+    //     // this.filePath = file;
+    //     // this.originalContent = content;
+    //     this.rawMarkdownText = content;
+    //   });
+    // },
     renderMarkdownToHtml() {
       this.renderedHtml = marked(this.rawMarkdownText);
     },

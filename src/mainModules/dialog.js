@@ -41,7 +41,7 @@ export const showSaveDialog = (targetWindow, file, content, type) => {
  */
 export const showMessageBox = ({
   win,
-  type,
+  type = 'warning',
   title = '',
   message = '',
   buttonsArr = ['confirm'],
