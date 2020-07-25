@@ -66,7 +66,8 @@ export default {
       currentWindow.setTitle(title);
 
       this.isEdited = isEdited;
-      currentWindow.setDocumentEdited(isEdited);
+      currentWindow.setDocumentEdited(isEdited); // for macOS
+      currentWindow.documentEdited = isEdited; // for windows
     },
     handleCreateWindow() {
       ipcRenderer.send('create-window');

@@ -3,7 +3,7 @@ import {
 } from 'electron';
 // import { createProtocol } from 'vue-cli-plugin-electron-builder/lib';
 import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer';
-import { createWindow } from './mainModules/window';
+// import { createWindow } from './mainModules/window';
 import WindowManager from './mainModules/windowManager';
 
 const windowManager = new WindowManager();
@@ -33,7 +33,7 @@ app.on('activate', () => {
   // On macOS it's common to re-create a window in the app when the
   // dock icon is clicked and there are no other windows open.
   if (win === null) {
-    win = createWindow();
+    win = windowManager.createWindow();
   }
 });
 
@@ -49,13 +49,14 @@ app.on('ready', async () => {
       console.error('Vue Devtools failed to install:', e.toString());
     }
   }
-  createWindow();
+  windowManager.createWindow();
+
   windowManager.initIpcMain();
 });
 
 app.on('will-finish-launching', () => {
   app.on('open-file', (e, file) => {
-    const newWin = createWindow();
+    const newWin = windowManager.createWindow();
     newWin.once('ready-to-show', () => {
       windowManager.handleOpenFile(newWin, file);
     });

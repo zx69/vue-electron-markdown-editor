@@ -34,3 +34,22 @@ export const showSaveDialog = (targetWindow, file, content, type) => {
     }
   });
 };
+
+/**
+ *
+ * @param {Array} buttonsArr {id: 0, text: 'confirm'}
+ */
+export const showMessageBox = ({
+  win,
+  type,
+  title = '',
+  message = '',
+  buttonsArr = ['confirm'],
+}) => dialog.showMessageBoxSync(win, {
+  type,
+  title,
+  message,
+  buttons: buttonsArr,
+  defaultId: 0,
+  cancelId: 1,
+});
