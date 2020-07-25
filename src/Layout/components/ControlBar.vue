@@ -1,12 +1,12 @@
 <template>
   <header class="control-bar">
-    <button @click="handleCreateWindow">新建</button>
-    <button @click="handleOpenFile">打开</button>
-    <button @click="handleSaveMarkdown" :disabeld="!isEdited">保存</button>
-    <button @click="handleRevertingFile" :disabeld="!isEdited">回退</button>
-    <button @click="handleSaveHtml">保存为HTML</button>
-    <button>显示文件</button>
-    <button>默认程序打开</button>
+    <button @click="handleCreateWindow">New File</button>
+    <button @click="handleOpenFile">Open File</button>
+    <button @click="handleSaveMarkdown" :disabeld="!isEdited">Save File</button>
+    <button @click="handleRevertingFile" :disabeld="!isEdited">Revert</button>
+    <button @click="handleSaveHtml">Save HTML</button>
+    <button>Show File</button>
+    <button>Open in Default Application</button>
   </header>
 </template>
 
