@@ -1,12 +1,13 @@
 import {
-  app, protocol,
+  app, protocol, Menu,
 } from 'electron';
 // import { createProtocol } from 'vue-cli-plugin-electron-builder/lib';
 import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer';
 // import { createWindow } from './mainModules/window';
-import WindowManager from './mainModules/windowManager';
+import windowManager from './mainModules/windowManager';
+import applicationMenu from './mainModules/menu';
 
-const windowManager = new WindowManager();
+// const windowManager = new WindowManager();
 // import { getFilePathByOpen } from './mainModules/dialog';
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
@@ -49,6 +50,7 @@ app.on('ready', async () => {
       console.error('Vue Devtools failed to install:', e.toString());
     }
   }
+  Menu.setApplicationMenu(applicationMenu);
   windowManager.createWindow();
 
   windowManager.initIpcMain();

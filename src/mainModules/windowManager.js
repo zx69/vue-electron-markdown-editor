@@ -1,5 +1,5 @@
 import {
-  app, BrowserWindow, ipcMain, Menu,
+  app, BrowserWindow, ipcMain,
 } from 'electron';
 import fs from 'fs';
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib';
@@ -7,26 +7,26 @@ import { getFilePathByOpen, showSaveDialog, showMessageBox } from './dialog';
 import { readFile } from './fs';
 
 // hide default menu buttons of window
-export const createMenu = () => {
-  // darwin表示macOS，针对macOS的设置
-  if (process.platform === 'darwin') {
-    const template = [
-      {
-        label: 'App Demo',
-        submenu: [
-          { role: 'about' },
-          { role: 'quit' },
+// export const createMenu = () => {
+//   // darwin表示macOS，针对macOS的设置
+//   if (process.platform === 'darwin') {
+//     const template = [
+//       {
+//         label: 'App Demo',
+//         submenu: [
+//           { role: 'about' },
+//           { role: 'quit' },
 
-        ],
+//         ],
 
-      },
-    ];
-    const menu = Menu.buildFromTemplate(template);
-    Menu.setApplicationMenu(menu);
-  } else {
-    Menu.setApplicationMenu(null);
-  }
-};
+//       },
+//     ];
+//     const menu = Menu.buildFromTemplate(template);
+//     Menu.setApplicationMenu(menu);
+//   } else {
+//     Menu.setApplicationMenu(null);
+//   }
+// };
 
 // documentEdited: 记录文件是否修改，在renderer中赋值， 用于windows
 // macOs有默认的isDocumentEdited值获取文件变化（Boolean）,但windoww没有，故在win下挂载变量以记录
@@ -39,7 +39,7 @@ const defineDocumentEdited = (targetWindow) => {
   });
 };
 
-export default class WindowManager {
+class WindowManager {
   constructor() {
     this.windows = new Set();
     this.currentWindow = {};
@@ -133,7 +133,7 @@ export default class WindowManager {
       win = null;
     });
 
-    createMenu();
+    // createMenu();
     defineDocumentEdited(win);
     return win;
   }
@@ -179,8 +179,6 @@ export default class WindowManager {
   }
 
   handleOpenFile(currentWindow, file) {
-    const content = readFile(file);
-    this.saveFileRecordToSystem(currentWindow, file);
     if (this.isDocumentEdited(currentWindow)) {
       const result = showMessageBox({
         win: currentWindow,
@@ -194,8 +192,10 @@ export default class WindowManager {
       if (result === 1) {
         return;
       }
-      currentWindow.webContents.send('file-opened', file, content);
     }
+    const content = readFile(file);
+    this.saveFileRecordToSystem(currentWindow, file);
+    currentWindow.webContents.send('file-opened', file, content);
   }
 
   // 保存文件打开记录, 用于macOS
@@ -222,9 +222,9 @@ export default class WindowManager {
           if (result === 1) {
             return;
           }
-          const content = readFile(file);
-          targetWindow.webContents.send('file-opened', file, content);
         }
+        const content = readFile(file);
+        targetWindow.webContents.send('file-opened', file, content);
       }
     });
     this.openedFiles.set(targetWindow, watcher);
@@ -238,3 +238,5 @@ export default class WindowManager {
     }
   }
 }
+
+export default new WindowManager();
