@@ -14,7 +14,7 @@
   "main": "src/background.js",
   "dependencies": {
     "core-js": "^3.6.5",
-    "marked": "^1.1.1",
+    "marked": "^4.0.10",
     "vue": "^2.6.11",
     "vuex": "^3.4.0"
   },
